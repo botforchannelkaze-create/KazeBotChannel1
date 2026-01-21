@@ -1,0 +1,7 @@
+pytz
+requests
+PyGithub
+aiofiles
+python-dotenv
+flask
+python-telegram-bot==21.6
