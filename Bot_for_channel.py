@@ -312,6 +312,10 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await msg.reply_text(" Mga kupal")
         return
 
+    if re.search(r"\bokay lang+\b", text_lower):
+        await msg.reply_text(" Whee di nga🙄!")
+        return
+
     # ===== PICK NUMBER (1–6 ONLY) =====
     if text_lower not in ["1", "2", "3", "4", "5", "6"]:
         return
