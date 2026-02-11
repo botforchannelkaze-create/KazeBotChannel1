@@ -300,7 +300,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # ===== BOT INFO =====
     if re.search(r"\b(ano ang pangalan mo|who are you)\b", text_lower):
-        await msg.reply_text("🤖 Ako si Kazebot!")
+        await msg.reply_text("🤖 Ako si Rose!")
         return
 
     # ===== FUN =====
@@ -312,8 +312,28 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await msg.reply_text(" Mga kupal")
         return
 
-    if re.search(r"\bokay lang+\b", text_lower):
+    if re.search(r"\bokay+\b", text_lower):
         await msg.reply_text(" Whee di nga🙄!")
+        return
+
+    if re.search(r"\bbili+\b", text_lower):
+        await msg.reply_text(" bili ka kay 👉 @KAZEHAYAMODZ")
+        return
+
+    if re.search(r"\bchecker+\b", text_lower):
+        await msg.reply_text(" Bumili ka wag puro hinge🙄")
+        return
+
+    if re.search(r"\byow+\b", text_lower):
+        await msg.reply_text(" Yow ano topic pwedy makisali?")
+        return
+
+    if re.search(r"\bSlyd+\b", text_lower):
+        await msg.reply_text(" madamot ako eh🫤")
+        return
+
+    if re.search(r"\bsolid+\b", text_lower):
+        await msg.reply_text(" Mas solid yan kapag mag avail ka ng lifetime ni kaze")
         return
 
     # ===== PICK NUMBER (1–6 ONLY) =====
