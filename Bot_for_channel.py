@@ -8,8 +8,13 @@ import pytz
 from telegram import Update, MessageEntity
 from telegram.ext import Application, CommandHandler, MessageHandler, ContextTypes, filters
 
+# ================= FILE IDs =================
 GG_FILE_ID = "BQACAgUAAxkBAAID7mme066zeoD9zp4WUQ5_OdyY4SrVAAKNHAACIAH5VGPU26rszTehOgQ"
-
+MT_FILE_ID = "BQACAgUAAxkBAAIEDGmfKRCao7aJoq19aqoqjsWKUYs_AAJZHQACIAH5VBOyW_iQUkpVOgQ"
+ANDLUA_FILE_ID = "BQACAgUAAxkBAAIECGmfKDEgnHs85TrdnBu9zRYoaXpgAAJSHQACIAH5VMFBC36WUb26OgQ"
+DUAL_FILE_ID = "BQACAgUAAxkBAAIECmmfKLtu5QOKjzG1zScNZCOG2e5uAAJYHQACIAH5VMkZ7jvEeEguOgQ"
+TERMUX_FILE_ID = "BQACAgUAAxkBAAIEDmmfKUMpTKGZm4jMgbSgKIp72k-hAAJaHQACIAH5VK7Esi8AAZ7fojoE"
+SCRIPT_FILE_ID = "BQACAgUAAxkBAAIEEGmfKVUcd9CiDpOP1qI3wcT6LFBSAALKGgACLMjwVKnnlFi0tZ9jOgQ"
 # ===== WEBKEEP ALIVE =====
 app_web = Flask(__name__)
 OWNER_ID = int(os.getenv("OWNER_ID", "0"))
@@ -258,20 +263,81 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text_lower = text.lower()
     user = update.effective_user
 
-    # ===== GAMEGUARDIAN AUTO DETECT =====
-    # Ise-send ng bot ang APK kapag may nakitang "gameguardian", "game guardian", o "gg"
-    if re.search(r"\b(gameguardian|game\sguardian|gg)\b", text_lower):
+    # ================= TOOLS DETECTION =================
+
+    # 1. GAMEGUARDIAN (Strict)
+    if re.search(r"\bgame\s?guardian+\b", text_lower):
         try:
             await msg.reply_document(
-                document=GG_FILE_ID,
-                caption="✅ **Eto na yung game guardian mo supported high Android device**",
+                document=GG_FILE_ID, 
+                caption="✅ **GameGuardian supported high Android device**", 
                 parse_mode="Markdown"
             )
-            return # Stop execution para hindi na mag-trigger ang ibang text filters
-        except Exception as e:
-            print(f"Error sending GG APK: {e}")
             return
+        except Exception as e:
+            print(f"Error GG: {e}")
 
+    # 2. MT MANAGER
+    if re.search(r"\bmt\s*manager+\b", text_lower):
+        try:
+            await msg.reply_document(
+                document=MT_FILE_ID, 
+                caption="✅ **MT Manager supported high Android device**", 
+                parse_mode="Markdown"
+            )
+            return
+        except Exception as e:
+            print(f"Error MT: {e}")
+
+    # 3. ANDLUA
+    if re.search(r"\bandlua+\b", text_lower):
+        try:
+            await msg.reply_document(
+                document=ANDLUA_FILE_ID, 
+                caption="✅ **AndLua+ for Lua Scripting**", 
+                parse_mode="Markdown"
+            )
+            return
+        except Exception as e:
+            print(f"Error AndLua: {e}")
+
+    # 4. DUALSPACE
+    if re.search(r"\bdual\s?space+\b", text_lower):
+        try:
+            await msg.reply_document(
+                document=DUAL_FILE_ID, 
+                caption="✅ **Dual Space (No Virtual) for High Android**", 
+                parse_mode="Markdown"
+            )
+            return
+        except Exception as e:
+            print(f"Error DualSpace: {e}")
+
+    # 5. TERMUX
+    if re.search(r"\btermux+\b", text_lower):
+        try:
+            await msg.reply_document(
+                document=TERMUX_FILE_ID, 
+                caption="✅ **Termux (F-Droid) for Shell Commands**", 
+                parse_mode="Markdown"
+            )
+            return
+        except Exception as e:
+            print(f"Error Termux: {e}")
+
+    # 6. CODM SCRIPT
+    if re.search(r"\bcodm\s?script+\b", text_lower):
+        try:
+            await msg.reply_document(
+                document=SCRIPT_FILE_ID, 
+                caption="✅ **CODM Premium Script by @KAZEHAYAMODZ**", 
+                parse_mode="Markdown"
+            )
+            return
+        except Exception as e:
+            print(f"Error Script: {e}")
+
+    # ================= EXISTING HANDLERS (Kaze, Phia, etc.) =================
     # ===== NAMES / SPECIAL =====
     if re.search(r"\bkaze+\b", text_lower):
         await msg.reply_text(" Pogi si Kaze!")
@@ -568,12 +634,6 @@ async def switch_kuri(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await asyncio.sleep(3)
     await msg.delete()
 
-async def get_file_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.message.document:
-        f_id = update.message.document.file_id
-        await update.message.reply_text(f"✅ **FILE ID OBTAINED:**\n\n`{f_id}`", parse_mode="Markdown")
-        print(f"File ID: {f_id}") # Lalabas din ito sa console mo
-
 # ===== MAIN FUNCTION =====
 def main():
     token = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -586,9 +646,7 @@ def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_command))
     app.add_handler(CommandHandler("report", report_user))
-    # Idagdag ito para gumana yung get_file_id kapag nag-send ka ng APK
-    app.add_handler(MessageHandler(filters.Document.ALL, get_file_id))
-    
+
     # ===== GAME COMMANDS =====
     app.add_handler(CommandHandler("roll", roll))
     app.add_handler(CommandHandler("reroll", reroll))
