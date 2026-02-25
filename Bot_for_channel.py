@@ -529,7 +529,13 @@ async def switch_kuri(update: Update, context: ContextTypes.DEFAULT_TYPE):
     msg = await update.message.reply_text("✅ Switch Successfully")
     await asyncio.sleep(3)
     await msg.delete()
-    
+
+async def get_file_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message.document:
+        f_id = update.message.document.file_id
+        await update.message.reply_text(f"✅ **FILE ID OBTAINED:**\n\n`{f_id}`", parse_mode="Markdown")
+        print(f"File ID: {f_id}") # Lalabas din ito sa console mo
+        
 # ===== MAIN FUNCTION =====
 def main():
     token = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -542,6 +548,8 @@ def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_command))
     app.add_handler(CommandHandler("report", report_user))
+    # Idagdag ito para gumana yung get_file_id kapag nag-send ka ng APK
+    app.add_handler(MessageHandler(filters.Document.ALL, get_file_id))
 
     # ===== GAME COMMANDS =====
     app.add_handler(CommandHandler("roll", roll))
