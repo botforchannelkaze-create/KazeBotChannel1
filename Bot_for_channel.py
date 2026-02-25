@@ -545,12 +545,6 @@ async def switch_kuri(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await asyncio.sleep(3)
     await msg.delete()
 
-async def get_file_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if update.message.document:
-        f_id = update.message.document.file_id
-        await update.message.reply_text(f"✅ **FILE ID OBTAINED:**\n\n`{f_id}`", parse_mode="Markdown")
-        print(f"File ID: {f_id}") # Lalabas din ito sa console mo
-        
 # ===== MAIN FUNCTION =====
 def main():
     token = os.getenv("TELEGRAM_BOT_TOKEN")
