@@ -8,6 +8,8 @@ import pytz
 from telegram import Update, MessageEntity
 from telegram.ext import Application, CommandHandler, MessageHandler, ContextTypes, filters
 
+GG_FILE_ID = "BQACAgUAAxkBAAID7mme066zeoD9zp4WUQ5_OdyY4SrVAAKNHAACIAH5VGPU26rszTehOgQ"
+
 # ===== WEBKEEP ALIVE =====
 app_web = Flask(__name__)
 OWNER_ID = int(os.getenv("OWNER_ID", "0"))
@@ -255,7 +257,20 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = msg.text.strip()
     text_lower = text.lower()
     user = update.effective_user
-    user_id = user.id
+
+    # ===== GAMEGUARDIAN AUTO DETECT =====
+    # Ise-send ng bot ang APK kapag may nakitang "gameguardian", "game guardian", o "gg"
+    if re.search(r"\b(gameguardian|game\sguardian|gg)\b", text_lower):
+        try:
+            await msg.reply_document(
+                document=GG_FILE_ID,
+                caption="✅ **Eto na yung game guardian mo supported high Android device**",
+                parse_mode="Markdown"
+            )
+            return # Stop execution para hindi na mag-trigger ang ibang text filters
+        except Exception as e:
+            print(f"Error sending GG APK: {e}")
+            return
 
     # ===== NAMES / SPECIAL =====
     if re.search(r"\bkaze+\b", text_lower):
