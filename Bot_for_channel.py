@@ -563,9 +563,7 @@ def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_command))
     app.add_handler(CommandHandler("report", report_user))
-    # Idagdag ito para gumana yung get_file_id kapag nag-send ka ng APK
-    app.add_handler(MessageHandler(filters.Document.ALL, get_file_id))
-
+    
     # ===== GAME COMMANDS =====
     app.add_handler(CommandHandler("roll", roll))
     app.add_handler(CommandHandler("reroll", reroll))
