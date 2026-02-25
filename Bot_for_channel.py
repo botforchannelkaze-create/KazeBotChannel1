@@ -15,6 +15,9 @@ ANDLUA_FILE_ID = "BQACAgUAAxkBAAIECGmfKDEgnHs85TrdnBu9zRYoaXpgAAJSHQACIAH5VMFBC3
 DUAL_FILE_ID = "BQACAgUAAxkBAAIECmmfKLtu5QOKjzG1zScNZCOG2e5uAAJYHQACIAH5VMkZ7jvEeEguOgQ"
 TERMUX_FILE_ID = "BQACAgUAAxkBAAIEDmmfKUMpTKGZm4jMgbSgKIp72k-hAAJaHQACIAH5VK7Esi8AAZ7fojoE"
 SCRIPT_FILE_ID = "BQACAgUAAxkBAAIEEGmfKVUcd9CiDpOP1qI3wcT6LFBSAALKGgACLMjwVKnnlFi0tZ9jOgQ"
+
+BOT_ACTIVE = True  # Default na naka-ON ang bot
+
 # ===== WEBKEEP ALIVE =====
 app_web = Flask(__name__)
 OWNER_ID = int(os.getenv("OWNER_ID", "0"))
@@ -67,6 +70,8 @@ async def send_temp_warning(chat, text: str, seconds: int = 5):
 
 
 async def moderate(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not BOT_ACTIVE: # Hihinto dito ang bot kapag OFF
+        return
     msg = update.message
     if not msg or not msg.from_user:
         return
@@ -104,6 +109,8 @@ async def moderate(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
 # ===== START COMMAND =====
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not BOT_ACTIVE:
+        return
     user = update.effective_user
     full_name = user.full_name.strip() if user and user.full_name else "Player"
 
@@ -121,6 +128,8 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(start_message)
     
 async def welcome(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not BOT_ACTIVE:
+        return
     chat = update.effective_chat
     msg = update.message
     if not msg or not msg.new_chat_members:
@@ -140,6 +149,8 @@ async def welcome(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await chat.send_message(welcome_message, disable_web_page_preview=True)
 # ===== /HELP COMMAND =====
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not BOT_ACTIVE:
+        return
     help_text = (
         "🤖 <b>KAZEBOT HELP MENU</b>\n\n"
 
@@ -147,6 +158,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "• /start – Bot information\n"
         "• /help – Show this help menu\n"
         "• /report @username reason – Report a user to admin & owner\n\n"
+        "• /filters – File\n"
 
         "🎮 <b>GAME COMMANDS</b>\n"
         "• Pick numbers: <b>1–6</b>\n"
@@ -253,6 +265,8 @@ from datetime import datetime
 import pytz
 
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not BOT_ACTIVE:
+        return
     global pending_game, roll_cooldown_active
 
     msg = update.message
@@ -647,7 +661,50 @@ async def filters_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
     
     await update.message.reply_text(filters_text, parse_mode="Markdown")
+
+async def toggle_bot(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    global BOT_ACTIVE
     
+    user_id = update.effective_user.id
+    chat_id = update.effective_chat.id
+
+    # 1. Check kung OWNER (Bypass agad)
+    is_owner = (OWNER_ID and user_id == OWNER_ID)
+    
+    # 2. Check kung ADMIN
+    is_admin_user = False
+    if not is_owner:
+        member = await context.bot.get_chat_member(chat_id, user_id)
+        if member.status in ("administrator", "creator"):
+            is_admin_user = True
+
+    # Kung hindi owner at hindi admin, deadma lang ang bot
+    if not (is_owner or is_admin_user):
+        return
+
+    # Logic para sa ON/OFF
+    if not context.args:
+        await update.message.reply_text("❓ Usage: `/Rose on` o `/Rose off`", parse_mode="Markdown")
+        return
+
+    choice = context.args[0].lower()
+
+    if choice == "off":
+        if not BOT_ACTIVE:
+            await update.message.reply_text("Maka tulog narin sa wakas🫰")
+            return
+        BOT_ACTIVE = False
+        await update.message.reply_text("🔴 **Rose is now OFF.**")
+        print(f"Bot disabled by: {user_id}")
+        
+    elif choice == "on":
+        if BOT_ACTIVE:
+            await update.message.reply_text(" Gising na gising napo ako🥱")
+            return
+        BOT_ACTIVE = True
+        await update.message.reply_text("🟢 **Rose is now ON.** Balik na tayo sa trabaho!")
+        print(f"Bot enabled by: {user_id}")
+        
 # ===== MAIN FUNCTION =====
 def main():
     token = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -661,6 +718,7 @@ def main():
     app.add_handler(CommandHandler("help", help_command))
     app.add_handler(CommandHandler("report", report_user))
     app.add_handler(CommandHandler("filters", filters_command))
+    app.add_handler(CommandHandler("Rose", toggle_bot))
 
     # ===== GAME COMMANDS =====
     app.add_handler(CommandHandler("roll", roll))
