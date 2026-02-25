@@ -351,6 +351,29 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await msg.reply_text(" Mas solid yan kapag mag avail ka ng lifetime ni kaze")
         return
 
+    if re.search(r"\brose+\b", text_lower):
+        await msg.reply_text(" bakit ano kailangan mo?")
+        return
+
+    if re.search(r"\blol+\b", text_lower):
+        await msg.reply_text(" nakakatawa?🥺")
+        return
+
+    if re.search(r"\buy+\b", text_lower):
+        await msg.reply_text(" Uyy?")
+        return
+
+    if re.search(r"\bscam+\b", text_lower):
+        await msg.reply_text(" kulong nayan")
+        return
+
+    if re.search(r"\blove+\b", text_lower):
+        await msg.reply_text(" Na all buti pa kayo")
+        return
+
+    if re.search(r"\bpls+\b", text_lower):
+        await msg.reply_text(" Bigyan nyona ouh nakakaawa")
+        return
     # ===== PICK NUMBER (1–6 ONLY) =====
     if text_lower not in ["1", "2", "3", "4", "5", "6"]:
         return
