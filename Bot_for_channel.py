@@ -634,6 +634,20 @@ async def switch_kuri(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await asyncio.sleep(3)
     await msg.delete()
 
+async def filters_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    filters_text = (
+        "List of filters:\n\n"
+        " - `gameguardian`\n"
+        " - `mt manager`\n"
+        " - `andlua`\n"
+        " - `termux`\n"
+        " - `dual space`\n"
+        " - `codm script`\n\n"
+        "💡 *Tip: Tap the name to copy, then paste and send to get the file!*"
+    )
+    
+    await update.message.reply_text(filters_text, parse_mode="Markdown")
+    
 # ===== MAIN FUNCTION =====
 def main():
     token = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -646,6 +660,7 @@ def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_command))
     app.add_handler(CommandHandler("report", report_user))
+    app.add_handler(CommandHandler("filters", filters_command))
 
     # ===== GAME COMMANDS =====
     app.add_handler(CommandHandler("roll", roll))
