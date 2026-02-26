@@ -139,8 +139,8 @@ async def welcome(update: Update, context: ContextTypes.DEFAULT_TYPE):
         full = (m.full_name or m.first_name or "Player").strip()
 
         welcome_message = (
-            f"👋 Hello {full}, welcome to Palaro! 🎮🔥\n\n"
-            "📌 Please check the pinned rules before playing.\n"
+            f"👋 Hello {full}, welcome to our DC!\n\n"
+            "📌 Please check the pinned rules to avoid banned.\n"
             "💬 Stay active and follow announcements for updates.\n\n"
             "👉 If you haven't joined our main channel yet, join here:\n"
             "https://t.me/+wkXVYyqiRYplZjk1"
@@ -152,13 +152,13 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if not BOT_ACTIVE:
         return
     help_text = (
-        "🤖 <b>KAZEBOT HELP MENU</b>\n\n"
+        "🤖 <b>ROSE HELP MENU</b>\n\n"
 
         "👤 <b>MEMBER COMMANDS</b>\n"
         "• /start – Bot information\n"
         "• /help – Show this help menu\n"
-        "• /report @username reason – Report a user to admin & owner\n\n"
-        "• /filters – File\n"
+        "• /report @username reason – Report a user to admin & owner\n"
+        "• /filters – File\n\n"
 
         "🎮 <b>GAME COMMANDS</b>\n"
         "• Pick numbers: <b>1–6</b>\n"
@@ -169,7 +169,11 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "🛑 <b>ADMIN COMMANDS</b>\n"
         "• /stoproll – Disable rolling\n"
         "• /runroll – Enable rolling\n"
-        "• /cancelroll – Cancel & reset the game\n\n"
+        "• /cancelroll – Cancel & reset the game\n"
+        "• /rose off – To rose disable\n"
+        "• /rose on – To rose enable\n\n"
+        
+        
 
         "ℹ️ <b>RULES & NOTES</b>\n"
         "• No picking while a game is pending\n"
@@ -704,6 +708,37 @@ async def toggle_bot(update: Update, context: ContextTypes.DEFAULT_TYPE):
         BOT_ACTIVE = True
         await update.message.reply_text("🟢 **Rose is now ON.** Balik na tayo sa trabaho!")
         print(f"Bot enabled by: {user_id}")
+
+import requests
+from telegram import Update
+from telegram.ext import ContextTypes
+
+async def scam_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # 1. Your Pastebin RAW link
+    PASTEBIN_URL = "https://pastebin.com/raw/TCfpBaeP"
+
+    try:
+        # 2. Fetching the list from Pastebin
+        response = requests.get(PASTEBIN_URL, timeout=10)
+        
+        if response.status_code == 200:
+            list_from_web = response.text
+            
+            # 3. Formatted Message with your new Reminder
+            message = (
+                "🚫 <b>OFFICIAL SCAMMER LIST</b> 🚫\n"
+                "<i>Updated in real-time via Server</i>\n\n"
+                f"{list_from_web}\n\n"
+                "⚠️ <b>Reminder:</b> Always use midman to avoid scam. Use midman @KAZEHAYAMODZ"
+            )
+            
+            await update.message.reply_text(message, parse_mode="HTML")
+        else:
+            await update.message.reply_text("❌ Error: Could not load scam list.")
+
+    except Exception as e:
+        print(f"Connection Error: {e}")
+        await update.message.reply_text("🚫 Server is offline. Please try again later.")
         
 # ===== MAIN FUNCTION =====
 def main():
@@ -719,6 +754,7 @@ def main():
     app.add_handler(CommandHandler("report", report_user))
     app.add_handler(CommandHandler("filters", filters_command))
     app.add_handler(CommandHandler("Rose", toggle_bot))
+    app.add_handler(CommandHandler("scamlist", scam_list))
 
     # ===== GAME COMMANDS =====
     app.add_handler(CommandHandler("roll", roll))
