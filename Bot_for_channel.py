@@ -769,44 +769,39 @@ async def get_file_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"✅ **FILE ID OBTAINED:**\n\n`{f_id}`", parse_mode="Markdown")
         print(f"File ID: {f_id}") # Lalabas din ito sa console mo
 
-# Ilagay ito sa taas kasama ng ibang functions
-OWNER_ID = 7201369115  # <--- PALITAN MO ITO NG USER ID MO
+OWNER_ID = 7201369115  # <--- Palitan mo ito ng User ID mo (yung number lang)
+TARGET_DC_ID = -1003271385335  # <--- Ito yung nakuha mo sa screenshot
 
 async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # Check kung sino ang nag-utos (Dapat ikaw lang ang boss)
     user_id = update.effective_user.id
     
-    # 1. Check kung Owner ang nag-utos
     if user_id != OWNER_ID:
-        # Pwedeng huwag sumagot ang bot para kunwari hindi niya narinig
-        return 
+        return # Dedma ang bot kung hindi ikaw ang owner
 
-    # 2. Kunin ang text pagkatapos ng command na /broadcast
-    # Halimbawa: /broadcast hi -> ang makukuha ay "hi"
+    # Kunin ang text pagkatapos ng /broadcast
     if not context.args:
-        await update.message.reply_text("❌ <b>Format:</b> <code>/broadcast [message]</code>", parse_mode="HTML")
+        await update.message.reply_text("💡 <b>Usage:</b> <code>/broadcast [message]</code>", parse_mode="HTML")
         return
 
-    broadcast_message = " ".join(context.args)
+    broadcast_text = " ".join(context.args)
 
-    # 3. Target Chat ID (Ang ID ng Group/DC mo)
-    # Kung gusto mo i-send sa mismong group kung nasaan ka:
-    target_chat_id = update.effective_chat.id 
-    
-    # I-send ang message bilang Bot
     try:
+        # I-send ang message DIREKTA sa DC
         await context.bot.send_message(
-            chat_id=target_chat_id,
-            text=broadcast_message,
+            chat_id=TARGET_DC_ID,
+            text=broadcast_text,
             parse_mode="HTML"
         )
-        # Burahin ang command mo para hindi nila malaman na ikaw ang nag-utos
+        
+        # Opsyonal: I-delete yung command mo sa group para "Ninja" moves
+        # Gagana lang ito kung Admin ang bot sa group kung nasaan ka
         await update.message.delete()
+        
     except Exception as e:
-        print(f"Error sa broadcast: {e}")
-
-# Sa main() function, i-dagdag ang handler:
-# app.add_handler(CommandHandler("broadcast", broadcast))
-
+        # Kung mag-error (halimbawa: hindi admin ang bot sa DC), sasabihan ka niya
+        await update.message.reply_text(f"❌ <b>Error:</b> {e}", parse_mode="HTML")
+        
 # ===== MAIN FUNCTION =====
 def main():
     token = os.getenv("TELEGRAM_BOT_TOKEN")
