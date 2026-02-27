@@ -661,7 +661,8 @@ async def filters_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         " - `andlua`\n"
         " - `termux`\n"
         " - `dual space`\n"
-        " - `codm script`\n\n"
+        " - `codm script`\n"
+        " - `getfreekey`\n\n"
         "💡 *Tip: Tap the name to copy, then paste and send to get the file!*"
     )
     
@@ -767,7 +768,45 @@ async def get_file_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
         f_id = update.message.document.file_id
         await update.message.reply_text(f"✅ **FILE ID OBTAINED:**\n\n`{f_id}`", parse_mode="Markdown")
         print(f"File ID: {f_id}") # Lalabas din ito sa console mo
-        
+
+# Ilagay ito sa taas kasama ng ibang functions
+OWNER_ID = 7201369115  # <--- PALITAN MO ITO NG USER ID MO
+
+async def broadcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    
+    # 1. Check kung Owner ang nag-utos
+    if user_id != OWNER_ID:
+        # Pwedeng huwag sumagot ang bot para kunwari hindi niya narinig
+        return 
+
+    # 2. Kunin ang text pagkatapos ng command na /broadcast
+    # Halimbawa: /broadcast hi -> ang makukuha ay "hi"
+    if not context.args:
+        await update.message.reply_text("❌ <b>Format:</b> <code>/broadcast [message]</code>", parse_mode="HTML")
+        return
+
+    broadcast_message = " ".join(context.args)
+
+    # 3. Target Chat ID (Ang ID ng Group/DC mo)
+    # Kung gusto mo i-send sa mismong group kung nasaan ka:
+    target_chat_id = update.effective_chat.id 
+    
+    # I-send ang message bilang Bot
+    try:
+        await context.bot.send_message(
+            chat_id=target_chat_id,
+            text=broadcast_message,
+            parse_mode="HTML"
+        )
+        # Burahin ang command mo para hindi nila malaman na ikaw ang nag-utos
+        await update.message.delete()
+    except Exception as e:
+        print(f"Error sa broadcast: {e}")
+
+# Sa main() function, i-dagdag ang handler:
+# app.add_handler(CommandHandler("broadcast", broadcast))
+
 # ===== MAIN FUNCTION =====
 def main():
     token = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -786,6 +825,7 @@ def main():
     app.add_handler(CommandHandler("getfreekey", Getfreekey))
     app.add_handler(CommandHandler("key", Getfreekey))
     app.add_handler(MessageHandler(filters.Regex(r'(?i)^Getfreekey$'), Getfreekey))
+    app.add_handler(CommandHandler("broadcast", broadcast))
     
     # ===== GAME COMMANDS =====
     app.add_handler(CommandHandler("roll", roll))
