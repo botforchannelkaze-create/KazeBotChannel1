@@ -710,36 +710,57 @@ async def toggle_bot(update: Update, context: ContextTypes.DEFAULT_TYPE):
         print(f"Bot enabled by: {user_id}")
 
 import requests
-from telegram import Update
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
 
-async def scam_list(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    # 1. Your Pastebin RAW link
+async def Getfreekey(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    # 1. Ang iyong RAW link mula sa Pastebin
     PASTEBIN_URL = "https://pastebin.com/raw/TCfpBaeP"
 
     try:
-        # 2. Fetching the list from Pastebin
         response = requests.get(PASTEBIN_URL, timeout=10)
         
         if response.status_code == 200:
-            list_from_web = response.text
+            all_lines = response.text.splitlines()
             
-            # 3. Formatted Message with your new Reminder
-            message = (
-                "🚫 <b>OFFICIAL SCAMMER LIST</b> 🚫\n"
-                "<i>Updated in real-time via Server</i>\n\n"
-                f"{list_from_web}\n\n"
-                "⚠️ <b>Reminder:</b> Always use midman to avoid scam. Use midman @KAZEHAYAMODZ"
+            if len(all_lines) < 2:
+                await update.message.reply_text("❌ <b>Error:</b> Please feedback owner")
+                return
+
+            # Line 1: Ito lang ang kukunin natin na link sa Pastebin
+            dynamic_key_url = all_lines[0].strip()
+            
+            # Line 2 hanggang dulo: Ito ang mismong Message
+            final_message = "\n".join(all_lines[1:])
+            
+            # --- [ BUTTONS LOGIC ] ---
+            keyboard = [
+                [
+                    # Eto yung nagbabago base sa Pastebin
+                    InlineKeyboardButton("🔑 GET KEY HERE", url=dynamic_key_url)
+                ],
+                [
+                    # Eto yung permanenteng Group Link mo
+                    InlineKeyboardButton("🛡️ JOIN CHANNEL", url="https://t.me/KazeMainChannel"),
+                    # Eto yung permanenteng Feedback Link mo
+                    InlineKeyboardButton("💬 FEEDBACK", url="https://t.me/KAZEHAYAMODZ")
+                ]
+            ]
+            reply_markup = InlineKeyboardMarkup(keyboard)
+            
+            await update.message.reply_text(
+                text=final_message, 
+                parse_mode="HTML", 
+                reply_markup=reply_markup,
+                disable_web_page_preview=True
             )
-            
-            await update.message.reply_text(message, parse_mode="HTML")
         else:
-            await update.message.reply_text("❌ Error: Could not load scam list.")
+            await update.message.reply_text("❌ <b>Error:</b> Server connection failed.", parse_mode="HTML")
 
     except Exception as e:
-        print(f"Connection Error: {e}")
-        await update.message.reply_text("🚫 Server is offline. Please try again later.")
-
+        print(f"Error: {e}")
+        await update.message.reply_text("🚫 <b>Server Offline:</b> Try again later.", parse_mode="HTML")
+        
 async def get_file_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.document:
         f_id = update.message.document.file_id
@@ -761,7 +782,9 @@ def main():
     app.add_handler(CommandHandler("report", report_user))
     app.add_handler(CommandHandler("filters", filters_command))
     app.add_handler(CommandHandler("Rose", toggle_bot))
-    app.add_handler(CommandHandler("scamlist", scam_list))
+    app.add_handler(CommandHandler("getfreekey", Getfreekey))
+    app.add_handler(CommandHandler("key", Getfreekey))
+    app.add_handler(MessageHandler(filters.Regex(r'(?i)^Getfreekey$'), Getfreekey))
     
     # ===== GAME COMMANDS =====
     app.add_handler(CommandHandler("roll", roll))
