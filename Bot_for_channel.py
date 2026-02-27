@@ -158,7 +158,8 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "• /start – Bot information\n"
         "• /help – Show this help menu\n"
         "• /report @username reason – Report a user to admin & owner\n"
-        "• /filters – File\n\n"
+        "• /Getfreekey – To get new update key for codm hacks\n"
+        "• /filters – To  filters files and more\n\n"
 
         "🎮 <b>GAME COMMANDS</b>\n"
         "• Pick numbers: <b>1–6</b>\n"
