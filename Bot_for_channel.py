@@ -358,7 +358,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
             print(f"Error Script: {e}")
 
         # 6. CODM SCRIPT
-    if re.search(r"\bcodm\i?injector+\b", text_lower):
+    if re.search(r"\bcodm\s?injector\b", text_lower):
         try:
             await msg.reply_document(
                 document=INJECTOR_FILE_ID, 
