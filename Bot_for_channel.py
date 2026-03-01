@@ -15,6 +15,7 @@ ANDLUA_FILE_ID = "BQACAgUAAxkBAAIECGmfKDEgnHs85TrdnBu9zRYoaXpgAAJSHQACIAH5VMFBC3
 DUAL_FILE_ID = "BQACAgUAAxkBAAIECmmfKLtu5QOKjzG1zScNZCOG2e5uAAJYHQACIAH5VMkZ7jvEeEguOgQ"
 TERMUX_FILE_ID = "BQACAgUAAxkBAAIEDmmfKUMpTKGZm4jMgbSgKIp72k-hAAJaHQACIAH5VK7Esi8AAZ7fojoE"
 SCRIPT_FILE_ID = "BQACAgUAAxkBAAIEZGmgFB0Dkd84qMbkfgfZ1YF2Zjj-AALSGgACoCYJVUsyAikdnV6BOgQ"
+INJECTOR_FILE_ID = "BQACAgUAAxkBAAIEummjxCojfwqOKSDXc7WddOzKpSnxAAIgHgACyEshVdrlKRhoKTtPOgQ"
 
 BOT_ACTIVE = True  # Default na naka-ON ang bot
 
@@ -349,12 +350,24 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         try:
             await msg.reply_document(
                 document=SCRIPT_FILE_ID, 
-                caption="✅ **CODM Premium Script by @KAZEHAYAMODZ**", 
+                caption="✅ **Codm Premium Script by @KAZEHAYAMODZ**", 
                 parse_mode="Markdown"
             )
             return
         except Exception as e:
             print(f"Error Script: {e}")
+
+        # 6. CODM SCRIPT
+    if re.search(r"\bcodm\i?injector+\b", text_lower):
+        try:
+            await msg.reply_document(
+                document=INJECTOR_FILE_ID, 
+                caption="✅ **Codm injector v2 New update v3.5**", 
+                parse_mode="Markdown"
+            )
+            return
+        except Exception as e:
+            print(f"Error: {e}")
 
     # ================= EXISTING HANDLERS (Kaze, Phia, etc.) =================
     # ===== NAMES / SPECIAL =====
