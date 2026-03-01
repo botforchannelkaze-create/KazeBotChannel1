@@ -675,7 +675,8 @@ async def filters_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         " - `termux`\n"
         " - `dual space`\n"
         " - `codm script`\n"
-        " - `getfreekey`\n\n"
+        " - `getfreekey`\n"
+        " - `codm injector`\n\n"
         "💡 *Tip: Tap the name to copy, then paste and send to get the file!*"
     )
     
