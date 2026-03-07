@@ -15,7 +15,7 @@ ANDLUA_FILE_ID = "BQACAgUAAxkBAAIECGmfKDEgnHs85TrdnBu9zRYoaXpgAAJSHQACIAH5VMFBC3
 DUAL_FILE_ID = "BQACAgUAAxkBAAIECmmfKLtu5QOKjzG1zScNZCOG2e5uAAJYHQACIAH5VMkZ7jvEeEguOgQ"
 TERMUX_FILE_ID = "BQACAgUAAxkBAAIEDmmfKUMpTKGZm4jMgbSgKIp72k-hAAJaHQACIAH5VK7Esi8AAZ7fojoE"
 SCRIPT_FILE_ID = "BQACAgUAAxkBAAIEZGmgFB0Dkd84qMbkfgfZ1YF2Zjj-AALSGgACoCYJVUsyAikdnV6BOgQ"
-INJECTOR_FILE_ID = "BQACAgUAAxkBAAIEummjxCojfwqOKSDXc7WddOzKpSnxAAIgHgACyEshVdrlKRhoKTtPOgQ"
+INJECTOR_FILE_ID = "BQACAgUAAxkBAAIFLGmsI0XSH2QjZAVBKKigH93pMWQVAAKmHAACcMJoVbWrrQjBitAcOgQ"
 
 BOT_ACTIVE = True  # Default na naka-ON ang bot
 
@@ -362,7 +362,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         try:
             await msg.reply_document(
                 document=INJECTOR_FILE_ID, 
-                caption="✅ **Codm injector v2 New update v3.5**", 
+                caption="✅ **Codm injector v2 New update v4.0**", 
                 parse_mode="Markdown"
             )
             return
