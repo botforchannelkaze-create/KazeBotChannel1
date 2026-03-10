@@ -1,6 +1,7 @@
 import os
 import re
 import asyncio
+import requests
 from threading import Thread
 from flask import Flask
 from datetime import datetime
@@ -686,19 +687,14 @@ async def filters_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     await update.message.reply_text(filters_text, parse_mode="Markdown")
 
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
-import asyncio
+OWNER_ID = 7201369115  # palitan mo ng owner ID mo
 
-BOT_ACTIVE = True
-OWNER_ID = 123456789  # palitan mo ng owner ID mo
-
-
-async def rose(update, context):
+async def rose(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_id = update.effective_user.id
     chat_id = update.effective_chat.id
 
     # OWNER check
-    is_owner = (OWNER_ID and user_id == OWNER_ID)
+    is_owner = OWNER_ID and user_id == OWNER_ID
 
     # ADMIN check
     is_admin_user = False
@@ -720,12 +716,13 @@ async def rose(update, context):
     reply_markup = InlineKeyboardMarkup(keyboard)
 
     await update.message.reply_text(
-        "🌹 **Rose Control Panel**\nPili ka lang:",
+        "🌹 *Rose Control Panel*\nPili ka lang:",
         reply_markup=reply_markup,
         parse_mode="Markdown"
     )
 
-async def rose_button(update, context):
+
+async def rose_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
     global BOT_ACTIVE
 
     query = update.callback_query
@@ -735,7 +732,7 @@ async def rose_button(update, context):
     await query.answer()
 
     # OWNER check
-    is_owner = (OWNER_ID and user_id == OWNER_ID)
+    is_owner = OWNER_ID and user_id == OWNER_ID
 
     # ADMIN check
     is_admin_user = False
@@ -752,14 +749,14 @@ async def rose_button(update, context):
             await query.edit_message_text("😴 Gising na gising napo ako.")
         else:
             BOT_ACTIVE = True
-            await query.edit_message_text("🟢 **Rose is now ON.** Balik na tayo sa trabaho!")
+            await query.edit_message_text("🟢 *Rose is now ON.* Balik na tayo sa trabaho!", parse_mode="Markdown")
 
     elif query.data == "rose_off":
         if not BOT_ACTIVE:
             await query.edit_message_text("😌 Maka tulog narin sa wakas.")
         else:
             BOT_ACTIVE = False
-            await query.edit_message_text("🔴 **Rose is now OFF.**")
+            await query.edit_message_text("🔴 *Rose is now OFF.*", parse_mode="Markdown")
 
     # after 5 seconds show buttons again
     await asyncio.sleep(5)
@@ -775,10 +772,10 @@ async def rose_button(update, context):
 
     await context.bot.send_message(
         chat_id=chat_id,
-        text="🌹 **Rose Control Panel**",
+        text="🌹 *Rose Control Panel*",
         reply_markup=reply_markup,
         parse_mode="Markdown"
-            )
+    )
     
 import requests
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
@@ -832,6 +829,15 @@ async def Getfreekey(update: Update, context: ContextTypes.DEFAULT_TYPE):
         print(f"Error: {e}")
         await update.message.reply_text("🚫 <b>Server Offline:</b> Try again later.", parse_mode="HTML")
         
+async def get_file_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message.document:
+        f_id = update.message.document.file_id
+        await update.message.reply_text(f"✅ **FILE ID OBTAINED:**\n\n`{f_id}`", parse_mode="Markdown")
+        print(f"File ID: {f_id}") # Lalabas din ito sa console mo
+
+OWNER_ID = 7201369115  # <--- Palitan mo ito ng User ID mo (yung number lang)
+TARGET_DC_ID = -1003271385335  # <--- Ito yung nakuha mo sa screenshot
+
 async def get_file_id(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.document:
         f_id = update.message.document.file_id
