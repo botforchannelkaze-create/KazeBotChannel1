@@ -879,17 +879,23 @@ def main():
 
     app = Application.builder().token(token).build()
     app.add_handler(MessageHandler(filters.Document.ALL, get_file_id))
-
+    
     # ===== COMMANDS =====
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_command))
     app.add_handler(CommandHandler("report", report_user))
     app.add_handler(CommandHandler("filters", filters_command))
+
+   # 🌹 ROSE INLINE CONTROL
     app.add_handler(CommandHandler("rose", rose))
     app.add_handler(CallbackQueryHandler(rose_button, pattern="rose_"))
+
+    # 🔑 KEY COMMANDS
     app.add_handler(CommandHandler("getfreekey", Getfreekey))
     app.add_handler(CommandHandler("key", Getfreekey))
     app.add_handler(MessageHandler(filters.Regex(r'(?i)^Getfreekey$'), Getfreekey))
+
+    # 📢 BROADCAST
     app.add_handler(CommandHandler("broadcast", broadcast))
     
     # ===== GAME COMMANDS =====
