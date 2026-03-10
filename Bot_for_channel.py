@@ -878,15 +878,16 @@ def main():
         raise RuntimeError("Missing TELEGRAM_TOKEN env var.")
 
     app = Application.builder().token(token).build()
+
     app.add_handler(MessageHandler(filters.Document.ALL, get_file_id))
-    
+
     # ===== COMMANDS =====
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_command))
     app.add_handler(CommandHandler("report", report_user))
     app.add_handler(CommandHandler("filters", filters_command))
 
-   # 🌹 ROSE INLINE CONTROL
+    # 🌹 ROSE INLINE CONTROL
     app.add_handler(CommandHandler("rose", rose))
     app.add_handler(CallbackQueryHandler(rose_button, pattern="rose_"))
 
@@ -897,7 +898,7 @@ def main():
 
     # 📢 BROADCAST
     app.add_handler(CommandHandler("broadcast", broadcast))
-    
+
     # ===== GAME COMMANDS =====
     app.add_handler(CommandHandler("roll", roll))
     app.add_handler(CommandHandler("reroll", reroll))
@@ -925,7 +926,6 @@ def main():
     app.add_handler(
         MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text),
         group=1
-        application.add_handler(CommandHandler("rose", rose))
     )
 
     app.run_polling(allowed_updates=Update.ALL_TYPES)
