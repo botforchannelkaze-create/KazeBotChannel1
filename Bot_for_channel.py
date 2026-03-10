@@ -15,7 +15,7 @@ ANDLUA_FILE_ID = "BQACAgUAAxkBAAIECGmfKDEgnHs85TrdnBu9zRYoaXpgAAJSHQACIAH5VMFBC3
 DUAL_FILE_ID = "BQACAgUAAxkBAAIECmmfKLtu5QOKjzG1zScNZCOG2e5uAAJYHQACIAH5VMkZ7jvEeEguOgQ"
 TERMUX_FILE_ID = "BQACAgUAAxkBAAIEDmmfKUMpTKGZm4jMgbSgKIp72k-hAAJaHQACIAH5VK7Esi8AAZ7fojoE"
 SCRIPT_FILE_ID = "BQACAgUAAxkBAAIEZGmgFB0Dkd84qMbkfgfZ1YF2Zjj-AALSGgACoCYJVUsyAikdnV6BOgQ"
-INJECTOR_FILE_ID = "BQACAgUAAxkBAAIFLGmsI0XSH2QjZAVBKKigH93pMWQVAAKmHAACcMJoVbWrrQjBitAcOgQ"
+INJECTOR_FILE_ID = "BQACAgUAAxkBAAIFYmmveKJ_q5R2lKcQiKNOxBCAmVU1AALSGQAC1gSAVQWujGMH9GrfOgQ"
 
 BOT_ACTIVE = True  # Default na naka-ON ang bot
 
@@ -362,7 +362,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         try:
             await msg.reply_document(
                 document=INJECTOR_FILE_ID, 
-                caption="✅ **Codm injector v2 New update v4.0**", 
+                caption="✅ **Codm injector v2 New update v4.5**", 
                 parse_mode="Markdown"
             )
             return
@@ -441,7 +441,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await msg.reply_text(" Yow ano topic pwedy makisali?")
         return
 
-    if re.search(r"\bSlyd+\b", text_lower):
+    if re.search(r"\bslyd+\b", text_lower):
         await msg.reply_text(" madamot ako eh🫤")
         return
 
@@ -471,6 +471,10 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     if re.search(r"\bpls+\b", text_lower):
         await msg.reply_text(" Bigyan nyona ouh nakakaawa")
+        return
+
+    if re.search(r"\bsticker+\b", text_lower):
+        await msg.reply_text(" Gusto mo gawin kitang sticker papilit kita sa pader")
         return
     # ===== PICK NUMBER (1–6 ONLY) =====
     if text_lower not in ["1", "2", "3", "4", "5", "6"]:
@@ -682,49 +686,100 @@ async def filters_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     await update.message.reply_text(filters_text, parse_mode="Markdown")
 
-async def toggle_bot(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    global BOT_ACTIVE
-    
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+import asyncio
+
+BOT_ACTIVE = True
+OWNER_ID = 123456789  # palitan mo ng owner ID mo
+
+
+async def rose(update, context):
     user_id = update.effective_user.id
     chat_id = update.effective_chat.id
 
-    # 1. Check kung OWNER (Bypass agad)
+    # OWNER check
     is_owner = (OWNER_ID and user_id == OWNER_ID)
-    
-    # 2. Check kung ADMIN
+
+    # ADMIN check
     is_admin_user = False
     if not is_owner:
         member = await context.bot.get_chat_member(chat_id, user_id)
         if member.status in ("administrator", "creator"):
             is_admin_user = True
 
-    # Kung hindi owner at hindi admin, deadma lang ang bot
     if not (is_owner or is_admin_user):
         return
 
-    # Logic para sa ON/OFF
-    if not context.args:
-        await update.message.reply_text("❓ Usage: `/Rose on` o `/Rose off`", parse_mode="Markdown")
+    keyboard = [
+        [
+            InlineKeyboardButton("🌹 Rose ON", callback_data="rose_on"),
+            InlineKeyboardButton("💤 Rose OFF", callback_data="rose_off"),
+        ]
+    ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await update.message.reply_text(
+        "🌹 **Rose Control Panel**\nPili ka lang:",
+        reply_markup=reply_markup,
+        parse_mode="Markdown"
+    )
+
+async def rose_button(update, context):
+    global BOT_ACTIVE
+
+    query = update.callback_query
+    user_id = query.from_user.id
+    chat_id = query.message.chat.id
+
+    await query.answer()
+
+    # OWNER check
+    is_owner = (OWNER_ID and user_id == OWNER_ID)
+
+    # ADMIN check
+    is_admin_user = False
+    if not is_owner:
+        member = await context.bot.get_chat_member(chat_id, user_id)
+        if member.status in ("administrator", "creator"):
+            is_admin_user = True
+
+    if not (is_owner or is_admin_user):
         return
 
-    choice = context.args[0].lower()
-
-    if choice == "off":
-        if not BOT_ACTIVE:
-            await update.message.reply_text("Maka tulog narin sa wakas🫰")
-            return
-        BOT_ACTIVE = False
-        await update.message.reply_text("🔴 **Rose is now OFF.**")
-        print(f"Bot disabled by: {user_id}")
-        
-    elif choice == "on":
+    if query.data == "rose_on":
         if BOT_ACTIVE:
-            await update.message.reply_text(" Gising na gising napo ako🥱")
-            return
-        BOT_ACTIVE = True
-        await update.message.reply_text("🟢 **Rose is now ON.** Balik na tayo sa trabaho!")
-        print(f"Bot enabled by: {user_id}")
+            await query.edit_message_text("😴 Gising na gising napo ako.")
+        else:
+            BOT_ACTIVE = True
+            await query.edit_message_text("🟢 **Rose is now ON.** Balik na tayo sa trabaho!")
 
+    elif query.data == "rose_off":
+        if not BOT_ACTIVE:
+            await query.edit_message_text("😌 Maka tulog narin sa wakas.")
+        else:
+            BOT_ACTIVE = False
+            await query.edit_message_text("🔴 **Rose is now OFF.**")
+
+    # after 5 seconds show buttons again
+    await asyncio.sleep(5)
+
+    keyboard = [
+        [
+            InlineKeyboardButton("🌹 Rose ON", callback_data="rose_on"),
+            InlineKeyboardButton("💤 Rose OFF", callback_data="rose_off"),
+        ]
+    ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await context.bot.send_message(
+        chat_id=chat_id,
+        text="🌹 **Rose Control Panel**",
+        reply_markup=reply_markup,
+        parse_mode="Markdown"
+            )
+    
 import requests
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
@@ -830,7 +885,8 @@ def main():
     app.add_handler(CommandHandler("help", help_command))
     app.add_handler(CommandHandler("report", report_user))
     app.add_handler(CommandHandler("filters", filters_command))
-    app.add_handler(CommandHandler("Rose", toggle_bot))
+    app.add_handler(CommandHandler("rose", rose))
+    app.add_handler(CallbackQueryHandler(rose_button, pattern="rose_"))
     app.add_handler(CommandHandler("getfreekey", Getfreekey))
     app.add_handler(CommandHandler("key", Getfreekey))
     app.add_handler(MessageHandler(filters.Regex(r'(?i)^Getfreekey$'), Getfreekey))
@@ -863,6 +919,7 @@ def main():
     app.add_handler(
         MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text),
         group=1
+        application.add_handler(CommandHandler("rose", rose))
     )
 
     app.run_polling(allowed_updates=Update.ALL_TYPES)
