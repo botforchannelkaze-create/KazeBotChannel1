@@ -282,8 +282,10 @@ from datetime import datetime
 import pytz
 
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
     if not BOT_ACTIVE:
         return
+
     global pending_game, roll_cooldown_active
 
     msg = update.message
@@ -296,12 +298,17 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     # ================= TOOLS DETECTION =================
 
-    # 1. GAMEGUARDIAN (Strict)
-    if re.search(r"\bgame\s?guardian+\b", text_lower):
+    # 1. GAMEGUARDIAN
+    if re.search(r"\bgame\s?guardian\b", text_lower):
         try:
             await msg.reply_document(
-                document=GG_FILE_ID, 
-                caption="✅ **GameGuardian supported high Android device**", 
+                document=GG_FILE_ID,
+                caption=(
+                    "🛠 **GameGuardian Tool**\n\n"
+                    "Supported for high Android devices.\n"
+                    "Use this tool for memory editing and advanced modding.\n\n"
+                    "⚠ Make sure your device supports GameGuardian before using."
+                ),
                 parse_mode="Markdown"
             )
             return
@@ -309,11 +316,16 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
             print(f"Error GG: {e}")
 
     # 2. MT MANAGER
-    if re.search(r"\bmt\s*manager+\b", text_lower):
+    if re.search(r"\bmt\s?manager\b", text_lower):
         try:
             await msg.reply_document(
-                document=MT_FILE_ID, 
-                caption="✅ **MT Manager supported high Android device**", 
+                document=MT_FILE_ID,
+                caption=(
+                    "📦 **MT Manager**\n\n"
+                    "A powerful APK editor and file manager.\n"
+                    "Perfect for editing files, scripts, and modding APKs.\n\n"
+                    "✔ Recommended tool for advanced Android users."
+                ),
                 parse_mode="Markdown"
             )
             return
@@ -321,11 +333,16 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
             print(f"Error MT: {e}")
 
     # 3. ANDLUA
-    if re.search(r"\bandlua+\b", text_lower):
+    if re.search(r"\bandlua\b", text_lower):
         try:
             await msg.reply_document(
-                document=ANDLUA_FILE_ID, 
-                caption="✅ **AndLua+ for Lua Scripting**", 
+                document=ANDLUA_FILE_ID,
+                caption=(
+                    "⚙ **AndLua+ Lua Environment**\n\n"
+                    "Used for running Lua scripts on Android.\n"
+                    "Required for executing custom scripts and automation.\n\n"
+                    "✔ Install and run your Lua scripts easily."
+                ),
                 parse_mode="Markdown"
             )
             return
@@ -333,11 +350,16 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
             print(f"Error AndLua: {e}")
 
     # 4. DUALSPACE
-    if re.search(r"\bdual\s?space+\b", text_lower):
+    if re.search(r"\bdual\s?space\b", text_lower):
         try:
             await msg.reply_document(
-                document=DUAL_FILE_ID, 
-                caption="✅ **Dual Space (No Virtual) for High Android**", 
+                document=DUAL_FILE_ID,
+                caption=(
+                    "📱 **Dual Space (No Virtual)**\n\n"
+                    "Clone apps easily on high Android devices.\n"
+                    "Allows you to run multiple instances of apps.\n\n"
+                    "✔ Recommended for injector and testing setups."
+                ),
                 parse_mode="Markdown"
             )
             return
@@ -345,11 +367,16 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
             print(f"Error DualSpace: {e}")
 
     # 5. TERMUX
-    if re.search(r"\btermux+\b", text_lower):
+    if re.search(r"\btermux\b", text_lower):
         try:
             await msg.reply_document(
-                document=TERMUX_FILE_ID, 
-                caption="✅ **Termux (F-Droid) for Shell Commands**", 
+                document=TERMUX_FILE_ID,
+                caption=(
+                    "💻 **Termux (F-Droid Version)**\n\n"
+                    "A powerful terminal emulator for Android.\n"
+                    "Run Linux commands and install developer tools.\n\n"
+                    "✔ Best for advanced users and developers."
+                ),
                 parse_mode="Markdown"
             )
             return
@@ -357,34 +384,42 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
             print(f"Error Termux: {e}")
 
     # 6. CODM SCRIPT
-    if re.search(r"\bcodm\s?script+\b", text_lower):
+    if re.search(r"\bcodm\s?script\b", text_lower):
         try:
             await msg.reply_document(
-                document=SCRIPT_FILE_ID, 
-                caption="✅ **Codm Premium Script by @KAZEHAYAMODZ**", 
+                document=SCRIPT_FILE_ID,
+                caption=(
+                    "🔥 **CODM Premium Script**\n\n"
+                    "Exclusive script developed by **@KAZEHAYAMODZ**.\n"
+                    "Optimized for better performance and stability.\n\n"
+                    "✔ Make sure you are using the latest injector version."
+                ),
                 parse_mode="Markdown"
             )
             return
         except Exception as e:
             print(f"Error Script: {e}")
 
-        # 6. CODM SCRIPT
-    if re.search(r"\bcodm\s?injector\b", text_lower):
-    try:
-        await msg.reply_document(
-            document=INJECTOR_FILE_ID, 
-            caption="✅ **Codm Injector – New Update v5.0**\n\n"
-                    "All features are included in this version.\n"
-                    "✔ Updated Injector\n"
+    # 7. CODM INJECTOR
+    if re.search(r"\bcodm\s?(injector|inj)\b", text_lower):
+        try:
+            await msg.reply_document(
+                document=INJECTOR_FILE_ID,
+                caption=(
+                    "🚀 **CODM Injector – New Update v5.0**\n\n"
+                    "All core features are included in this version:\n\n"
+                    "✔ Updated Injector System\n"
                     "✔ Key Generator Access\n"
-                    "✔ Device Lock System\n\n"
-                    "Make sure to follow the guide and generate your key from the website before using the injector. 🚀",
-            parse_mode="Markdown"
-        )
-        return
-    except Exception as e:
-        print(f"Error: {e}")
-
+                    "✔ Secure Device Lock System\n\n"
+                    "📌 Generate your key from the website before using the injector.\n"
+                    "📌 Make sure your injector is updated to avoid errors.\n\n"
+                    "Enjoy the latest version! 🔥"
+                ),
+                parse_mode="Markdown"
+            )
+            return
+        except Exception as e:
+            print(f"Error Injector: {e}")
     # ================= EXISTING HANDLERS (Kaze, Phia, etc.) =================
     # ===== NAMES / SPECIAL =====
     if re.search(r"\bkaze+\b", text_lower):
