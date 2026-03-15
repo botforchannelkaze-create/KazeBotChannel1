@@ -27,6 +27,7 @@ DUAL_FILE_ID = "BQACAgUAAxkBAAIECmmfKLtu5QOKjzG1zScNZCOG2e5uAAJYHQACIAH5VMkZ7jvE
 TERMUX_FILE_ID = "BQACAgUAAxkBAAIEDmmfKUMpTKGZm4jMgbSgKIp72k-hAAJaHQACIAH5VK7Esi8AAZ7fojoE"
 SCRIPT_FILE_ID = "BQACAgUAAxkBAAIEZGmgFB0Dkd84qMbkfgfZ1YF2Zjj-AALSGgACoCYJVUsyAikdnV6BOgQ"
 INJECTOR_FILE_ID = "BQACAgUAAxkBAAIFv2m1OqJ1K-VcXv7X9csBOSiXoJ_hAAJaHAAC_LmoVVUY057NHLqgOgQ"
+AMY_FILE_ID = "BQACAgUAAyEFAATC_WD3AAKnOmm2VopEy0Vc_BOdmto5-1N53P-ZAAJMGgACPL-5VRbdmmqlskYeOgQ"
 
 BOT_ACTIVE = True  # Default na naka-ON ang bot
 
@@ -121,8 +122,6 @@ async def moderate(update: Update, context: ContextTypes.DEFAULT_TYPE):
         
 # ===== START COMMAND =====
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not BOT_ACTIVE:
-        return
     user = update.effective_user
     full_name = user.full_name.strip() if user and user.full_name else "Player"
 
@@ -140,8 +139,6 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(start_message)
     
 async def welcome(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not BOT_ACTIVE:
-        return
     chat = update.effective_chat
     msg = update.message
     if not msg or not msg.new_chat_members:
@@ -161,8 +158,6 @@ async def welcome(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await chat.send_message(welcome_message, disable_web_page_preview=True)
 # ===== /HELP COMMAND =====
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    if not BOT_ACTIVE:
-        return
     help_text = (
         "🤖 <b>ROSE HELP MENU</b>\n\n"
 
@@ -283,9 +278,6 @@ import pytz
 
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    if not BOT_ACTIVE:
-        return
-
     global pending_game, roll_cooldown_active
 
     msg = update.message
@@ -365,7 +357,24 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
             return
         except Exception as e:
             print(f"Error DualSpace: {e}")
-
+            
+        # Amy virtual
+    if re.search(r"\bamy\s?virtual\b", text_lower):
+        try:
+            await msg.reply_document(
+                document=AMY_FILE_ID,
+                caption=(
+                    "📱 **Amy Virtual (No Virtual)**\n\n"
+                    "FIXED! ❌ Error: Cannot Access Memory (Check Root)\n"
+                    "For device-specific issues, use this virtual method only.\n\n"
+                    "✔ Recommended for injector and testing setups."
+                ),
+                parse_mode="Markdown"
+            )
+            return
+        except Exception as e:
+            print(f"Error Amy: {e}")
+            
     # 5. TERMUX
     if re.search(r"\btermux\b", text_lower):
         try:
@@ -729,6 +738,7 @@ async def filters_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         " - `andlua`\n"
         " - `termux`\n"
         " - `dual space`\n"
+        " - `amy virtual`\n"
         " - `codm script`\n"
         " - `getfreekey`\n"
         " - `codm injector`\n\n"
